@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, UserResponse } from './interfaces/user.interface';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -45,13 +45,13 @@ export class UserService {
     },
   ];
 
-  findOne(id: string): TE.TaskEither<string, UserResponse> {
+  findOne(id: string): TE.TaskEither<NotFoundException, UserResponse> {
     return pipe(
       TE.of(this.users),
       TE.map(A.findFirst((user: User) => String(user.id) === String(id))),
       TE.chain(
-        O.fold(
-          () => TE.left('Пользователь не найден'),
+        O.match(
+          () => TE.left(new NotFoundException('Пользователь не найден')),
           ({ password: _, ...user }) => TE.right(user),
         ),
       ),

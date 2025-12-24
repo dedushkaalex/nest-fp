@@ -1,9 +1,17 @@
 import { Module } from '@nestjs/common';
-import { IamService } from './iam.service';
-import { IamController } from './iam.controller';
+import { CryptoService } from './hashing/crypto.service';
+import { HashingService } from './hashing/hashing.service';
+import { AuthenticationController } from './authentication/authentication.controller';
+import { AuthenticationService } from './authentication/authentication.service';
 
 @Module({
-  controllers: [IamController],
-  providers: [IamService],
+  providers: [
+    {
+      provide: HashingService,
+      useClass: CryptoService,
+    },
+    AuthenticationService,
+  ],
+  controllers: [AuthenticationController],
 })
 export class IamModule {}

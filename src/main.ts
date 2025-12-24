@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 import { EitherInterceptor } from './core/helpers/either.interceptors';
 
 async function bootstrap() {
@@ -7,4 +7,5 @@ async function bootstrap() {
   app.useGlobalInterceptors(new EitherInterceptor());
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+void bootstrap();

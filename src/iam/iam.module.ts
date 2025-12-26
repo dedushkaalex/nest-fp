@@ -11,6 +11,7 @@ import { User } from '../user/entities/user.entities';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AuthenticationController } from './authentication/authentication.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { JwtModule } from '@nestjs/jwt';
   providers: [
     { provide: HashingService, useClass: Argon2HashingService },
     AuthenticationService,
+    AuthGuard,
   ],
-  exports: [HashingService, AuthenticationService],
+  exports: [HashingService, AuthenticationService, JwtModule],
 })
 export class IamModule {}

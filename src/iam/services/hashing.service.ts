@@ -12,7 +12,7 @@ export abstract class HashingService {
 
 @Injectable()
 export class Argon2HashingService implements HashingService {
-  salt?: Buffer;
+  salt: Buffer = Buffer.from('salt_default+!!!');
 
   private readonly logger = new Logger(this.constructor.name);
 
@@ -20,7 +20,7 @@ export class Argon2HashingService implements HashingService {
     @Inject(hashingConfig.KEY)
     public readonly config: ConfigType<typeof hashingConfig>,
   ) {
-    this.salt = config.salt ? Buffer.from(config.salt) : undefined;
+    this.salt = config.salt ? Buffer.from(config.salt) : this.salt;
 
     if (!this.salt) {
       this.logger.warn(`No salt provided. This is not recommended.`);
@@ -28,10 +28,10 @@ export class Argon2HashingService implements HashingService {
   }
 
   compare(data: BufferOrString, encrypted: string): Promise<boolean> {
-    return argon2.verify(encrypted, data, { secret: Buffer.from(this.salt!) });
+    return argon2.verify(encrypted, data, { secret: Buffer.from(this.salt) });
   }
 
   hash(data: BufferOrString): Promise<string> {
-    return argon2.hash(data, { secret: Buffer.from(this.salt!) });
+    return argon2.hash(data, { secret: Buffer.from(this.salt) });
   }
 }

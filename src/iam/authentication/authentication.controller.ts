@@ -11,7 +11,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { EitherInterceptor } from '../../core/helpers/either.interceptors';
 
-@Controller('authentication')
+@Controller()
 export class AuthenticationController {
   constructor(private readonly authService: AuthenticationService) {}
 

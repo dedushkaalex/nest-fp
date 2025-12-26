@@ -3,17 +3,39 @@ import { AppModule } from './app/app.module';
 import { EitherInterceptor } from './core/helpers/either.interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import cookieParser from 'cookie-parser'; // Re-added
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder().build();
+  // CORS configuration
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'X-Requested-With',
+      'Authorization',
+    ],
+    credentials: true,
+  });
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  const config = new DocumentBuilder()
+    .setTitle('Nest FP API')
+    .setDescription('The Nest FP API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.useGlobalInterceptors(new EitherInterceptor());
   app.useGlobalPipes(new ValidationPipe());
+
+  app.use(cookieParser(process.env.COOKIE_SECRET ?? 'secret', {})); // Re-added
+
   await app.listen(process.env.PORT ?? 3000);
 }
 

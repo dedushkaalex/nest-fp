@@ -34,10 +34,15 @@ export class AuthenticationService {
   signIn(signInDto: SignInDto) {
     return pipe(
       this.findUserByEmail(signInDto.email),
+      TE.tap((user) => {
+        console.log('findUserByEmail result:', user);
+        return TE.of(void 0);
+      }),
       TE.mapLeft(() => new ConflictException('Invalid credentionals')),
-      TE.chainFirstW((user) =>
-        this.validatePassword(signInDto.password, user.password),
-      ),
+      TE.chainFirstW((user) => {
+        // console.log(user);
+        return this.validatePassword(signInDto.password, user.password);
+      }),
       TE.chainW((user) => this.generateTokens(user)),
     );
   }
@@ -80,6 +85,7 @@ export class AuthenticationService {
   }
 
   private validatePassword(hashedPassword: string, providedPassword: string) {
+    console.log(hashedPassword, providedPassword);
     return pipe(
       TE.tryCatch(
         () => this.hashingService.compare(hashedPassword, providedPassword),

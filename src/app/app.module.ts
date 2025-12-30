@@ -4,9 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getOrmConfigOptions } from '../shared/configs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IamModule } from 'src/core/modules/iam/iam.module';
-import { User } from 'src/users/entities/user.entity';
-import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -18,7 +16,7 @@ import { AuthModule } from 'src/auth/auth.module';
       useFactory: getOrmConfigOptions,
       inject: [ConfigService],
     }),
-    AuthModule,
+    UsersModule,
   ],
   providers: [
     {

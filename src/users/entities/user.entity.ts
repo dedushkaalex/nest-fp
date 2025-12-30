@@ -1,5 +1,5 @@
 import { AuthEntity } from 'src/core/modules/iam/authentication/auth.entity';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 @Entity()
 export class User extends AuthEntity {

@@ -34,7 +34,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new EitherInterceptor());
   app.useGlobalPipes(new ValidationPipe());
 
-  app.use(cookieParser(process.env.COOKIE_SECRET ?? 'secret', {})); // Re-added
+  app.use(cookieParser(process.env.COOKIE_SECRET ?? 'secret', {}));
 
   await app.listen(process.env.PORT ?? 3000);
 }

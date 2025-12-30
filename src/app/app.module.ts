@@ -1,11 +1,12 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppService } from './app.service';
-import { UserModule } from '../user/user.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getOrmConfigOptions } from '../shared/configs/typeorm';
-import { IamModule } from '../iam/iam.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { IamModule } from 'src/core/modules/iam/iam.module';
+import { User } from 'src/users/entities/user.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,9 +18,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       useFactory: getOrmConfigOptions,
       inject: [ConfigService],
     }),
-
-    UserModule,
-    IamModule,
+    AuthModule,
   ],
   providers: [
     {

@@ -6,6 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthenticationService } from './authentication/authentication.service';
 import { Crypto } from 'src/core/lib/crypto/crypto.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { getRedisConfig } from 'src/shared/configs/redis';
+import { RefreshTokenIdsStorage } from './authentication/refresh-token-ids.storage';
 
 @Module({})
 export class IamModule {
@@ -32,11 +36,22 @@ export class IamModule {
       inject: [IAM_MODULE_OPTIONS_KEY, DataSource],
     };
 
+    const redisProvider = RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: getRedisConfig,
+      inject: [ConfigService],
+    });
+
     return {
       module: IamModule,
-      imports: [typeOrmProvider, cryptoProvider],
-      providers: [userRepositoryProvider, moduleOptions, AuthenticationService],
-      exports: [AuthenticationService],
+      imports: [typeOrmProvider, cryptoProvider, JwtModule, redisProvider],
+      providers: [
+        userRepositoryProvider,
+        moduleOptions,
+        AuthenticationService,
+        RefreshTokenIdsStorage,
+      ],
+      exports: [AuthenticationService, JwtModule, RefreshTokenIdsStorage],
     };
   }
 }

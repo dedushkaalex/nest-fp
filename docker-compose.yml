@@ -24,7 +24,30 @@ services:
       - '6379:6379'
     volumes:
       - redis_data:/data
+    networks:
+      - database
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: nestjs-task-management_redis-commander
+    restart: unless-stopped
+    profiles:
+      - monitoring
+    healthcheck:
+      disable: true
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - database
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
 
 volumes:
   db_data:
   redis_data:
+
+networks:
+  database:
+    driver: bridge

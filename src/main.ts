@@ -32,10 +32,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalInterceptors(
-    new EitherInterceptor(),
-    new ApplyTokensInterceptor(),
-  );
+  app.useGlobalInterceptors(new EitherInterceptor());
   app.useGlobalPipes(new ValidationPipe());
 
   app.use(cookieParser(process.env.COOKIE_SECRET ?? 'secret', {}));

@@ -4,6 +4,7 @@ services:
     restart: always
     env_file:
       - apps/backend/.env
+      - .env
     ports:
       - '5433:5432'
     healthcheck:
@@ -38,6 +39,7 @@ services:
     restart: always
     env_file:
       - apps/backend/.env
+      - .env
     ports:
       - "3010:3010"
     depends_on:

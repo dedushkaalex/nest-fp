@@ -165,7 +165,7 @@ export class AuthenticationService<T extends AuthEntity> {
   }
 
   refreshToken(refreshTokenDto: RefreshTokenDto) {
-    console.log(refreshTokenDto)
+    console.log(refreshTokenDto);
     return pipe(
       TE.tryCatch(
         () =>

@@ -1,25 +1,18 @@
 {
-  "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-  },
+  // "files" is an array of files to include in the root project.
+  // In a monorepo, we leave this empty because the root doesn't contain code directly.
+  "files": [],
+
+  // "references" lists all the TypeScript projects (packages/apps) in the monorepo.
+  // This enables TypeScript Project References, which are crucial in a monorepo setup.
+  // Each reference points to a package or app that has its own tsconfig.json.
+  "references": [
+    // Reference to the backend app (e.g., an API or server application).
+    // This app can depend on shared and utils, and TypeScript will build dependencies in the correct order.
+    { "path": "./apps/backend" },
+
+    // Reference to the frontend app (e.g., a web client).
+    // Like backend, it can import from shared and utils with full type safety.
+    { "path": "./apps/frontend" }
+  ]
 }

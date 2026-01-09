@@ -1,0 +1,32 @@
+# Git and OS specific
+.git
+.gitignore
+.DS_Store
+
+# Node modules - pnpm создаст одну папку в корне
+node_modules
+
+# Build artifacts from local machine
+dist
+build
+coverage
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE and environment files
+.idea
+.vscode
+.env
+.env.*
+.env.local
+
+# This file itself
+Dockerfile
+.dockerignore

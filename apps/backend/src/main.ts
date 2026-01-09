@@ -3,8 +3,7 @@ import { AppModule } from './app/app.module';
 import { EitherInterceptor } from './core/helpers/either.interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser'; // Re-added
-import { ApplyTokensInterceptor } from './core/modules/iam/apply-token.interceptor';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

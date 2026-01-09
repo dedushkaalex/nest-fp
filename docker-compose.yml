@@ -3,7 +3,7 @@ services:
     image: postgres:16-alpine
     restart: always
     env_file:
-      - apps/backend/.env
+      # - apps/backend/.env
       - .env
     ports:
       - '5433:5432'
@@ -38,7 +38,7 @@ services:
       dockerfile: apps/backend/Dockerfile
     restart: always
     env_file:
-      - apps/backend/.env
+      # - apps/backend/.env
       - .env
     ports:
       - "3010:3010"

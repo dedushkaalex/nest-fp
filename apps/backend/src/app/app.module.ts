@@ -5,10 +5,12 @@ import { getOrmConfigOptions } from '../shared/configs/typeorm';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
+import path from 'node:path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: [path.join(process.cwd(), '../..', '.env')],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({

@@ -8,15 +8,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { SignInDto } from 'src/core/modules/iam/authentication/dto/sign-in.dto';
-import { SignUpDto } from 'src/core/modules/iam/authentication/dto/sign-up.dto';
+import { SignInDto } from '../iam/authentication/dto/sign-in.dto';
+import { SignUpDto } from '../iam/authentication/dto/sign-up.dto';
 import { UsersService } from './users.service';
-import { AuthGuard } from 'src/core/modules/iam/auth.guard';
-import { ActiveUserData } from 'src/core/modules/iam/interfaces/active-user-data.interface';
+import { AuthGuard } from '../iam/auth.guard';
+import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
 import type { Request } from 'express';
-import { RemoveTokensInterceptor } from 'src/core/modules/iam/remove-token.interceptor';
-import { ApplyTokensInterceptor } from 'src/core/modules/iam/apply-token.interceptor';
-import { REFRESH_TOKEN_COOKIE_NAME } from 'src/core/modules/iam/iam.constants';
+import { RemoveTokensInterceptor } from '../iam/remove-token.interceptor';
+import { ApplyTokensInterceptor } from '../iam/apply-token.interceptor';
+import { REFRESH_TOKEN_COOKIE_NAME } from '../iam/iam.constants';
 
 interface RequestWithUser extends Request {
   user: ActiveUserData;

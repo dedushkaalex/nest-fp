@@ -1,4 +1,4 @@
-import { AuthEntity } from 'src/core/modules/iam/authentication/auth.entity';
+import { AuthEntity } from '../../iam/authentication/auth.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity()

@@ -7,7 +7,8 @@
     "lint:backend": "pnpm --filter @app/backend lint && pnpm --filter @app/backend typecheck",
     "lint:frontend": "pnpm --filter @app/frontend lint && pnpm --filter @app/frontend typecheck",
     "typecheck": "tsc --noEmit",
-     "build": "pnpm -r --parallel build"
+    "build": "pnpm -r --parallel build",
+    "start:dev": "pnpm --filter @app/backend start:dev"
   },
   "keywords": [],
   "author": "",

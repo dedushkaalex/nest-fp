@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AuthenticationService } from 'src/core/modules/iam/authentication/authentication.service';
+import { AuthenticationService } from '../iam/authentication/authentication.service';
 import { User } from './entities/user.entity';
-import { SignInDto } from 'src/core/modules/iam/authentication/dto/sign-in.dto';
-import { SignUpDto } from 'src/core/modules/iam/authentication/dto/sign-up.dto';
-import { RefreshTokenDto } from 'src/core/modules/iam/authentication/dto/refresh-token.dto';
-import { SignOutDto } from 'src/core/modules/iam/authentication/dto/sign-out.dto';
+import { SignInDto } from '../iam/authentication/dto/sign-in.dto';
+import { SignUpDto } from '../iam/authentication/dto/sign-up.dto';
+import { RefreshTokenDto } from '../iam/authentication/dto/refresh-token.dto';
+import { SignOutDto } from '../iam/authentication/dto/sign-out.dto';
 
 @Injectable()
 export class UsersService {

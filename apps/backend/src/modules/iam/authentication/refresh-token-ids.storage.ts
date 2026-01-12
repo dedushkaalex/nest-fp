@@ -1,24 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService, DEFAULT_REDIS } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
-import { ConfigService } from '@nestjs/config';
+
+import {
+  InjectJWTConfig,
+  type JWTConfiguration,
+} from 'src/shared/configs/jwt-config';
 
 @Injectable()
 export class RefreshTokenIdsStorage {
   private readonly redis: Redis;
   constructor(
+    @InjectJWTConfig()
+    private readonly jwtConfiguration: JWTConfiguration,
     private readonly redisService: RedisService,
-    private readonly configService: ConfigService,
   ) {
     this.redis = this.redisService.getOrThrow(DEFAULT_REDIS);
   }
 
   async insert(userId: number, tokenId: string): Promise<void> {
     const key = this.getKey(userId);
-    const refreshTokenTtl = parseInt(
-      this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL'),
-      10,
-    );
+    const refreshTokenTtl = this.jwtConfiguration.refreshTokenTtl;
+
     await this.redis.sadd(key, tokenId);
     await this.redis.expire(key, refreshTokenTtl);
   }

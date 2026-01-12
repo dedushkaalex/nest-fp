@@ -22,14 +22,18 @@ import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { SignOutDto } from './dto/sign-out.dto';
+import {
+  InjectJWTConfig,
+  type JWTConfiguration,
+} from 'src/shared/configs/jwt-config';
 
 @Injectable()
 export class AuthenticationService<T extends AuthEntity> {
   constructor(
     @Inject(AUTH_REPOSITORY_KEY) private readonly userRepository: Repository<T>,
     private readonly cryptoService: CryptoService,
+    @InjectJWTConfig() private readonly jwtConfiguration: JWTConfiguration,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
 
@@ -112,14 +116,9 @@ export class AuthenticationService<T extends AuthEntity> {
       async () => {
         const jtiRefresh = randomUUID();
 
-        const accessTokenTtl = parseInt(
-          this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_TTL'),
-          10,
-        );
-        const refreshTokenTtl = parseInt(
-          this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL'),
-          10,
-        );
+        const accessTokenTtl = this.jwtConfiguration.accessTokenTtl;
+
+        const refreshTokenTtl = this.jwtConfiguration.refreshTokenTtl;
 
         const [accessToken, refreshToken] = await Promise.all([
           this.signToken(user.id, accessTokenTtl),
@@ -145,7 +144,7 @@ export class AuthenticationService<T extends AuthEntity> {
       },
       {
         expiresIn,
-        secret: this.configService.getOrThrow('JWT_SECRET'),
+        secret: this.jwtConfiguration.secret,
       },
     );
   }
@@ -172,7 +171,7 @@ export class AuthenticationService<T extends AuthEntity> {
           this.jwtService.verifyAsync<ActiveUserData & { jti: string }>(
             refreshTokenDto.refreshToken,
             {
-              secret: this.configService.getOrThrow('JWT_SECRET'),
+              secret: this.jwtConfiguration.secret,
             },
           ),
         () =>

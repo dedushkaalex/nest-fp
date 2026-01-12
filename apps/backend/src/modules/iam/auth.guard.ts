@@ -9,6 +9,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { AUTHENTICATION_COOKIE_NAME } from './iam.constants';
 import { ActiveUserData } from './interfaces/active-user-data.interface';
+import {
+  InjectJWTConfig,
+  type JWTConfiguration,
+} from 'src/shared/configs/jwt-config';
 
 interface RequestWithUser extends Request {
   user: ActiveUserData;
@@ -17,7 +21,7 @@ interface RequestWithUser extends Request {
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly configService: ConfigService,
+    // @InjectJWTConfig() private readonly jwtConfiguration: JWTConfiguration,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -30,7 +34,8 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync<ActiveUserData>(token, {
-        secret: this.configService.getOrThrow<string>('JWT_SECRET'),
+        // secret: this.jwtConfiguration.secret,
+        secret: 'sdasd',
       });
       request.user = payload;
     } catch {

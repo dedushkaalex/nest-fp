@@ -50,16 +50,12 @@ export class AuthenticationService<T extends AuthEntity> {
   }
 
   //TODO: избавиться от as
-  signUp(userSignUpDto: SignUpDto) {
+  signUp(userSignUpDto: SignUpDto, user: T) {
     return pipe(
       this.createPassword(userSignUpDto.password),
       TE.bindTo('password'),
       TE.bindW('user', ({ password }) => {
-        const newUser = this.userRepository.create({
-          email: userSignUpDto.email,
-          password,
-        } as DeepPartial<T>);
-        return this.saveUser(newUser);
+        return this.saveUser({ ...user, email: userSignUpDto.email, password });
       }),
       TE.bindW('tokens', ({ user }) => this.generateTokens(user)),
       TE.map(({ user, tokens }) => ({ user, tokens })),

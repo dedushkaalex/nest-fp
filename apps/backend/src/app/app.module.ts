@@ -12,12 +12,29 @@ import {
   AppEnvironmentVariables,
 } from 'src/shared/configs/app-config';
 import { typeOrmConfig } from 'src/shared/configs/typeorm.config';
+import {
+  cryptoConfig,
+  CryptoEnvironmentVariables,
+} from 'src/shared/configs/crypto-config';
+import {
+  jwtConfig,
+  JWTEnvironmentVariables,
+} from 'src/shared/configs/jwt-config';
+import {
+  redisConfig,
+  RedisEnvironmentVariables,
+} from 'src/shared/configs/redis-config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      validate: validate(AppEnvironmentVariables),
-      load: [appConfig],
+      validate: validate(
+        AppEnvironmentVariables,
+        JWTEnvironmentVariables,
+        CryptoEnvironmentVariables,
+        RedisEnvironmentVariables,
+      ),
+      load: [appConfig, typeOrmConfig, jwtConfig, cryptoConfig, redisConfig],
       envFilePath: [path.join(process.cwd(), '../..', '.env')],
       cache: true,
       isGlobal: true,

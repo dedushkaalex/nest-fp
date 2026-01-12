@@ -2,28 +2,29 @@ import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/modules/users/users.module';
 import path from 'node:path';
-import { validate } from 'src/shared/configs/environment.validation';
+import { validate } from '@/shared/configs/environment.validation';
 import {
   appConfig,
   AppEnvironmentVariables,
-} from 'src/shared/configs/app-config';
-import { typeOrmConfig } from 'src/shared/configs/typeorm.config';
+} from '@/shared/configs/app-config';
+import { typeOrmConfig } from '@/shared/configs/typeorm.config';
 import {
   cryptoConfig,
   CryptoEnvironmentVariables,
-} from 'src/shared/configs/crypto-config';
+} from '@/shared/configs/crypto-config';
 import {
   jwtConfig,
   JWTEnvironmentVariables,
-} from 'src/shared/configs/jwt-config';
+} from '@/shared/configs/jwt-config';
 import {
   redisConfig,
   RedisEnvironmentVariables,
-} from 'src/shared/configs/redis-config';
+} from '@/shared/configs/redis-config';
+import { DomainExceptionFilter } from '@/core/filters/domain-exceptions.filter';
 
 @Module({
   imports: [
@@ -47,6 +48,10 @@ import {
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: DomainExceptionFilter,
     },
     AppService,
   ],

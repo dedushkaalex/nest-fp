@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AuthenticationService } from '../iam/authentication/authentication.service';
 import { User } from './entities/user.entity';
 import { SignInDto } from '../iam/authentication/dto/sign-in.dto';
-import { SignUpDto } from '../iam/authentication/dto/sign-up.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { RefreshTokenDto } from '../iam/authentication/dto/refresh-token.dto';
 import { SignOutDto } from '../iam/authentication/dto/sign-out.dto';
 import { Repository } from 'typeorm';
@@ -21,7 +21,10 @@ export class UsersService {
   }
 
   signUp(signUpDto: SignUpDto) {
-    const newUser = this.userRepository.create();
+    const newUser = this.userRepository.create({
+      firstName: signUpDto.firstName,
+      lastName: signUpDto.lastName,
+    });
     return this.authService.signUp(signUpDto, newUser);
   }
 

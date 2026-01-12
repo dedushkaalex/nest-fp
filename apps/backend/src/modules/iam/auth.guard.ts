@@ -11,7 +11,7 @@ import { ActiveUserData } from './interfaces/active-user-data.interface';
 import {
   InjectJWTConfig,
   type JWTConfiguration,
-} from 'src/shared/configs/jwt-config';
+} from '@/shared/configs/jwt-config';
 
 interface RequestWithUser extends Request {
   user: ActiveUserData;

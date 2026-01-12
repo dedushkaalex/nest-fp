@@ -8,15 +8,14 @@ import {
 } from '@nestjs/common';
 import { SignInDto } from './dto/sign-in.dto';
 import { AUTH_REPOSITORY_KEY } from '../iam.constants';
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { pipe } from 'fp-ts/lib/function';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { AuthEntity } from './auth.entity';
 import { SignUpDto } from './dto/sign-up.dto';
-import { dbErrors, isQueryFailedError } from 'src/core/helpers/typeorm-pg';
-import { CryptoService } from 'src/core/lib/crypto/crypto.service';
+import { dbErrors, isQueryFailedError } from '@/core/helpers/typeorm-pg';
+import { CryptoService } from '@/core/lib/crypto/crypto.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -25,7 +24,14 @@ import { SignOutDto } from './dto/sign-out.dto';
 import {
   InjectJWTConfig,
   type JWTConfiguration,
-} from 'src/shared/configs/jwt-config';
+} from '@/shared/configs/jwt-config';
+import {
+  CouldNotCreateUser,
+  CouldNotFindUser,
+  CouldNotGenerateToken,
+  InvalidCredentials,
+  UserAlreadyExists,
+} from '../errors';
 
 @Injectable()
 export class AuthenticationService<T extends AuthEntity> {
@@ -41,15 +47,18 @@ export class AuthenticationService<T extends AuthEntity> {
     return pipe(
       this.findUserByEmail(signInDto.email),
       TE.bindTo('user'),
+      TE.mapLeft(() => new InvalidCredentials()),
       TE.chainFirstW(({ user }) =>
         this.validatePassword(signInDto.password, user.password),
       ),
       TE.bindW('tokens', ({ user }) => this.generateTokens(user)),
-      TE.map(({ user, tokens }) => ({ user, tokens })),
+      TE.map(({ user, tokens }) => {
+        const { password: _, ...userWithoutPassword } = user;
+        return { user: userWithoutPassword, tokens };
+      }),
     );
   }
 
-  //TODO: избавиться от as
   signUp(userSignUpDto: SignUpDto, user: T) {
     return pipe(
       this.createPassword(userSignUpDto.password),
@@ -58,7 +67,10 @@ export class AuthenticationService<T extends AuthEntity> {
         return this.saveUser({ ...user, email: userSignUpDto.email, password });
       }),
       TE.bindW('tokens', ({ user }) => this.generateTokens(user)),
-      TE.map(({ user, tokens }) => ({ user, tokens })),
+      TE.map(({ user, tokens }) => {
+        const { password: _, ...userWithoutPassword } = user;
+        return { user: userWithoutPassword, tokens };
+      }),
     );
   }
 
@@ -73,11 +85,9 @@ export class AuthenticationService<T extends AuthEntity> {
       () => this.userRepository.save(user),
       (err) => {
         if (isQueryFailedError(err) && dbErrors.isUniqueViolation(err)) {
-          return new ConflictException('Пользователь уже существует');
+          return new UserAlreadyExists();
         }
-        return new InternalServerErrorException(
-          'Ошибка сохранения пользователя',
-        );
+        return new CouldNotCreateUser();
       },
     );
   }
@@ -93,7 +103,7 @@ export class AuthenticationService<T extends AuthEntity> {
           email,
         } as FindOptionsWhere<T>);
       },
-      () => new UnauthorizedException('Неверный логин или пароль'),
+      () => new CouldNotFindUser(),
     );
   }
 
@@ -103,7 +113,7 @@ export class AuthenticationService<T extends AuthEntity> {
         this.userRepository.findOneByOrFail({
           id,
         } as FindOptionsWhere<T>),
-      () => new NotFoundException('Пользователь не найден'),
+      () => new CouldNotFindUser(),
     );
   }
 
@@ -125,10 +135,7 @@ export class AuthenticationService<T extends AuthEntity> {
 
         return { accessToken, refreshToken };
       },
-      () =>
-        new InternalServerErrorException(
-          'Внутренняя ошибка сервера при генерации токенов',
-        ),
+      () => new CouldNotGenerateToken(),
     );
   }
 
@@ -149,18 +156,15 @@ export class AuthenticationService<T extends AuthEntity> {
     return pipe(
       TE.tryCatch(
         () => this.cryptoService.compare(providedPassword, hashedPassword),
-        () => new UnauthorizedException('Неверный логин или пароль'),
+        () => new InvalidCredentials(),
       ),
       TE.chainW((isValid) =>
-        isValid
-          ? TE.right(true)
-          : TE.left(new UnauthorizedException('Неверный логин или пароль')),
+        isValid ? TE.right(true) : TE.left(() => new InvalidCredentials()),
       ),
     );
   }
 
   refreshToken(refreshTokenDto: RefreshTokenDto) {
-    console.log(refreshTokenDto);
     return pipe(
       TE.tryCatch(
         () =>
@@ -170,16 +174,13 @@ export class AuthenticationService<T extends AuthEntity> {
               secret: this.jwtConfiguration.secret,
             },
           ),
-        () =>
-          new UnauthorizedException('Refresh токен невалиден или просрочен'),
+        () => new InvalidCredentials(),
       ),
       TE.bindTo('refreshTokenPayload'),
       TE.bindW('user', ({ refreshTokenPayload }) =>
         pipe(
           this.findUserById(refreshTokenPayload.sub),
-          TE.mapLeft(
-            () => new UnauthorizedException('Пользователь из токена не найден'),
-          ),
+          TE.mapLeft(() => new InvalidCredentials()),
         ),
       ),
       TE.chainW(({ user, refreshTokenPayload }) =>
@@ -190,11 +191,7 @@ export class AuthenticationService<T extends AuthEntity> {
           );
 
           if (!isValid) {
-            return TE.left(
-              new UnauthorizedException(
-                'Refresh токен недействителен или был отозван',
-              ),
-            );
+            return TE.left(new InvalidCredentials());
           }
 
           await this.refreshTokenIdsStorage.invalidate(user.id);

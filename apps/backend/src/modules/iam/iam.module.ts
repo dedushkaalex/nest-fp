@@ -1,18 +1,17 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { AuthEntity } from './authentication/auth.entity';
+import { AuthenticationService } from './authentication/authentication.service';
+import { RefreshTokenIdsStorage } from './authentication/refresh-token-ids.storage';
 import type { IIamModuleOptions } from './iam-options.interface';
 import { AUTH_REPOSITORY_KEY, IAM_MODULE_OPTIONS_KEY } from './iam.constants';
-import { DataSource } from 'typeorm';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthenticationService } from './authentication/authentication.service';
-import { Crypto } from 'src/core/lib/crypto/crypto.module';
-import { JwtModule } from '@nestjs/jwt';
+import { Crypto } from '@/core/lib/crypto/crypto.module';
+import { cryptoConfig } from '@/shared/configs/crypto-config';
+import { jwtConfig } from '@/shared/configs/jwt-config';
+import { redisConfig } from '@/shared/configs/redis-config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { RefreshTokenIdsStorage } from './authentication/refresh-token-ids.storage';
-import { jwtConfig } from 'src/shared/configs/jwt-config';
-import { AuthEntity } from './authentication/auth.entity';
-import { cryptoConfig } from 'src/shared/configs/crypto-config';
-import { redisConfig } from 'src/shared/configs/redis-config';
-
+import { DynamicModule, Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 @Module({})
 export class IamModule {
   static forRoot<T extends AuthEntity>(

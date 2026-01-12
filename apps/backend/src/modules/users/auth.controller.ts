@@ -9,7 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { SignInDto } from '../iam/authentication/dto/sign-in.dto';
-import { SignUpDto } from '../iam/authentication/dto/sign-up.dto';
+
 import { UsersService } from './users.service';
 import { AuthGuard } from '../iam/auth.guard';
 import { ActiveUserData } from '../iam/interfaces/active-user-data.interface';
@@ -17,6 +17,7 @@ import type { Request } from 'express';
 import { RemoveTokensInterceptor } from '../iam/remove-token.interceptor';
 import { ApplyTokensInterceptor } from '../iam/apply-token.interceptor';
 import { REFRESH_TOKEN_COOKIE_NAME } from '../iam/iam.constants';
+import { SignUpDto } from './dto/sign-up.dto';
 
 interface RequestWithUser extends Request {
   user: ActiveUserData;

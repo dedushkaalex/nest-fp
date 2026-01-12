@@ -9,8 +9,8 @@ import {
 import { Inject } from '@nestjs/common';
 import { ConfigType, registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
-import { Environment } from 'src/shared/constants/environment';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { Environment } from '@/shared/constants/environment';
 
 export class TypeOrmEnvironmentVariables {
   @IsEnum(Environment)
@@ -56,7 +56,7 @@ export const typeOrmConfig = registerAs('typeorm', () => {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.DB_SYNCHRONIZE === 'true',
-      // namingStrategy: new TypeormNamingStrategy(),
+      namingStrategy: new SnakeNamingStrategy(),
       dropSchema: false,
       autoLoadEntities: true,
       ssl: true,

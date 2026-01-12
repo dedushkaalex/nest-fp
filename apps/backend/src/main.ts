@@ -1,10 +1,15 @@
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
+
 import { AppModule } from './app/app.module';
 import { EitherInterceptor } from './core/helpers/either.interceptors';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
-import { ConfigService } from '@nestjs/config';
 
 const GLOBAL_PREFIX = 'api';
 
@@ -37,8 +42,19 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new EitherInterceptor());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      skipMissingProperties: true,
+      skipUndefinedProperties: true,
+    }),
+  );
+  app.useGlobalInterceptors(
+    new EitherInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
 
   const cookieSecret = configService.get<string>('COOKIE_SECRET');
 

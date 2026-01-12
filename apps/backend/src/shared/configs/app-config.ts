@@ -3,7 +3,7 @@ import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { Inject } from '@nestjs/common';
 import { registerAs, ConfigType } from '@nestjs/config';
 
-import { Environment } from 'src/shared/constants/environment';
+import { Environment } from '@/shared/constants/environment';
 
 export class AppEnvironmentVariables {
   @IsEnum(Environment)

@@ -22,6 +22,7 @@ jobs:
         owner: ${{ github.repository_owner }}
         repo: ${{ github.event.repository.name }}
         pr_number: ${{ github.event.number }}
+        include_extensions: '.ts,.js,.yaml,.yml,.json,.env,.md'
         language: 'Russian'
 
         ai_provider: 'perplexity'

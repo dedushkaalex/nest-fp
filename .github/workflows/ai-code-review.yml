@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull_request: write
+      pull-requests: write
     steps:
     - name: AI Code Review
       uses: dedushkaalex/ai-code-review@main

@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI Code Review
-      uses: AleksandrFurmenkovOfficial/ai-code-review@v1.0
+      uses: dedushkaalex/ai-code-review@main
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
         repo: ${{ github.event.repository.name }}
         pr_number: ${{ github.event.number }}
+        language: 'Russian'
 
         ai_provider: 'perplexity'
         perplexity_api_key: ${{ secrets.PERPLEXITY_API_KEY }}

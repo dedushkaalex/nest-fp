@@ -16,13 +16,15 @@ jobs:
       with:
         fetch-depth: 0
     - name: AI Code Review
+      env:
+        DEBUG: input-processor,github-api,perplexity-agent
       uses: dedushkaalex/ai-code-review@main
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
         repo: ${{ github.event.repository.name }}
         pr_number: ${{ github.event.number }}
-        include_extensions: '.ts,.js,.yaml,.yml,.json,.env,.md'
+        include_extensions: 'ts,js,yaml,json,jsx,tsx'
         language: 'Russian'
 
         ai_provider: 'perplexity'

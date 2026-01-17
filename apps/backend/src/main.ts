@@ -1,14 +1,22 @@
-import { NestFactory } from '@nestjs/core';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
+
 import { AppModule } from './app/app.module';
 import { EitherInterceptor } from './core/helpers/either.interceptors';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+
+const GLOBAL_PREFIX = 'api';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // CORS configuration
+  const configService = app.get(ConfigService);
   app.enableCors({
     origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -21,6 +29,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.setGlobalPrefix(GLOBAL_PREFIX);
+
   const config = new DocumentBuilder()
     .setTitle('Nest FP API')
     .setDescription('The Nest FP API description')
@@ -31,12 +41,32 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalInterceptors(new EitherInterceptor());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      skipMissingProperties: true,
+      skipUndefinedProperties: true,
+    }),
+  );
+  app.useGlobalInterceptors(
+    new EitherInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
 
-  app.use(cookieParser(process.env.COOKIE_SECRET ?? 'secret', {}));
+  const cookieSecret = configService.get<string>('COOKIE_SECRET');
 
-  await app.listen(process.env.PORT ?? 3000);
+  app.use(cookieParser(cookieSecret ?? 'secret', {}));
+
+  const port = configService.getOrThrow<number>('app.port');
+  const host = configService.getOrThrow<string>('app.host');
+
+  await app.listen(port, host);
+
+  Logger.log(
+    `🚀 Application is running on: http://${host}:${port}/${GLOBAL_PREFIX}`,
+  );
 }
 
 void bootstrap();

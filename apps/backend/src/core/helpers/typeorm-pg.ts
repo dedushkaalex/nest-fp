@@ -1,6 +1,6 @@
+import { PostgresError } from 'pg-error-enum';
 import type { DatabaseError } from 'pg-protocol';
 import { QueryFailedError } from 'typeorm';
-import { PostgresError } from 'pg-error-enum';
 
 export const isQueryFailedError = (
   error: unknown,

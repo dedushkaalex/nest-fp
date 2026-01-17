@@ -59,10 +59,8 @@ async function bootstrap() {
 
   app.use(cookieParser(cookieSecret ?? 'secret', {}));
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const port = configService.get('APP_PORT');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const host = configService.get('APP_HOST');
+  const port = configService.getOrThrow<number>('app.port');
+  const host = configService.getOrThrow<string>('app.host');
 
   await app.listen(port, host);
 

@@ -1,6 +1,4 @@
 export * from './base-error';
-export * from './base-error';
-
 export * from './already-done-error';
 export * from './forbidden-error';
 export * from './incorrect-data-error';

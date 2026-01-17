@@ -10,6 +10,9 @@ export interface ISeveralErrorAdditional {
 
 export class SeveralError extends BaseError<ISeveralErrorAdditional> {
   constructor(errors: Array<BaseError>) {
+    if (!errors?.length) {
+      throw new Error('SeveralError requires at least one error');
+    }
     super();
 
     this.baseType = errors[0].getBaseType();

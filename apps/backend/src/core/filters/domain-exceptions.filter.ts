@@ -14,7 +14,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
     const additional = exception.getAdditional();
     const code = getHttpCodeByException(exception);
 
-    response.status(code).send({
+    response.status(code).json({
       success: false,
       error: {
         type,

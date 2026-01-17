@@ -24,11 +24,14 @@ export class RedisEnvironmentVariables {
 }
 
 export const redisConfig = registerAs('redis', (): RedisModuleOptions => {
-  const url = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
-
+  if (process.env.REDIS_URL) {
+    return { config: { url: process.env.REDIS_URL } };
+  }
   return {
     config: {
-      url,
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD,
     },
   };
 });

@@ -9,7 +9,7 @@ const errorTypeToHttpMapping: Record<BaseErrorsType, HttpStatus> = {
   [BaseErrorsType.NOT_FOUND]: HttpStatus.NOT_FOUND,
   [BaseErrorsType.INCORRECT_DATA]: HttpStatus.BAD_REQUEST,
   [BaseErrorsType.UNKNOWN]: HttpStatus.INTERNAL_SERVER_ERROR,
-  [BaseErrorsType.ALREADY_DONE]: HttpStatus.FORBIDDEN,
+  [BaseErrorsType.ALREADY_DONE]: HttpStatus.CONFLICT,
   [BaseErrorsType.RETRY_LATER]: HttpStatus.TOO_MANY_REQUESTS,
 } as const;
 
